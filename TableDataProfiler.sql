@@ -8,7 +8,7 @@
             - Total row count
             - Null count and percent null
             - Distinct count
-            - Min and max values (generic, via sql_variant)
+            - Min and max values (as nvarchar(4000))
             - Min and max string length
             - Sample value
 
@@ -23,7 +23,7 @@
 -- 1. Target table
 --========================================================================
 DECLARE @SchemaName sysname = 'dbo';
-DECLARE @TableName  sysname = 'YourTableNameHere';
+DECLARE @TableName  sysname = 'RNDC14_NDC_MSTR';
 
 --========================================================================
 -- 2. Validate table exists
@@ -82,11 +82,11 @@ CREATE TABLE #ColumnProfile
     NullCount       bigint,
     PercentNull     decimal(5, 2),
     DistinctCount   bigint,
-    MinValue        sql_variant,
-    MaxValue        sql_variant,
+    MinValue        nvarchar(4000),
+    MaxValue        nvarchar(4000),
     MinLength       int,
     MaxValueLength  int,
-    SampleValue     sql_variant
+    SampleValue     nvarchar(4000)
 );
 
 --========================================================================
@@ -140,11 +140,11 @@ BEGIN
                              / NULLIF(' + CAST(@TotalRows AS nvarchar(20)) + ', 0) AS decimal(5,2))
               END AS PercentNull
             , COUNT(DISTINCT ' + QUOTENAME(@ColumnName) + ') AS DistinctCount
-            , MIN(CONVERT(sql_variant, ' + QUOTENAME(@ColumnName) + ')) AS MinValue
-            , MAX(CONVERT(sql_variant, ' + QUOTENAME(@ColumnName) + ')) AS MaxValue
+            , MIN(CONVERT(nvarchar(4000), ' + QUOTENAME(@ColumnName) + ')) AS MinValue
+            , MAX(CONVERT(nvarchar(4000), ' + QUOTENAME(@ColumnName) + ')) AS MaxValue
             , MIN(LEN(CONVERT(nvarchar(4000), ' + QUOTENAME(@ColumnName) + '))) AS MinLength
             , MAX(LEN(CONVERT(nvarchar(4000), ' + QUOTENAME(@ColumnName) + '))) AS MaxValueLength
-            , MAX(CONVERT(sql_variant, ' + QUOTENAME(@ColumnName) + ')) AS SampleValue
+            , MAX(CONVERT(nvarchar(4000), ' + QUOTENAME(@ColumnName) + ')) AS SampleValue
         FROM ' + @FullTableName + ';';
 
     EXEC sp_executesql @SQL;
